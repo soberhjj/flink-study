@@ -1,4 +1,4 @@
-package com.hjj.flink.demo;
+package com.hjj.flink.wordcount;
 
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.ExecutionEnvironment;
@@ -11,13 +11,15 @@ import org.apache.flink.util.Collector;
 
 /**
  * @author huangJunJie 2022-11-15-20:02
+ *
+ * 使用DataSet API即批处理方式进行WordCount
  */
 public class BatchWordCount {
     public static void main(String[] args) throws Exception {
         // 1. 创建执行环境, Flink 在执行应用程序前应该获取执行环境对象，也就是运行时上下文环境
         ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
         // 2. 数据源(本地文本文件)
-        DataSource<String> lineDS = env.readTextFile("E:\\IDEA\\Projects\\flink-study\\flink-api-practice\\src\\main\\resources\\test_data\\words.txt");
+        DataSource<String> lineDS = env.readTextFile("flink-api-practice/src/main/resources/test_data/words.txt");
         // 3. 数据处理
         FlatMapOperator<String, Tuple2<String, Long>> wordAndOne = lineDS.flatMap((String line, Collector<Tuple2<String, Long>> out) -> {
             String[] words = line.split(" ");

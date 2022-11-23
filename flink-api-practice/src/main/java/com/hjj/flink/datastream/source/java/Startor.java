@@ -11,7 +11,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 public class Startor {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(3);
+        env.setParallelism(1);
 
         FlinkInnerSource flinkInnerSource = new FlinkInnerSource();
         FlinkThirdSource flinkThirdSource = new FlinkThirdSource();

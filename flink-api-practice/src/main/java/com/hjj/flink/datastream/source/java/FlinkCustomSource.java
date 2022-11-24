@@ -21,7 +21,7 @@ public class FlinkCustomSource {
      * 自定义source:随机数据
      * 这种自定义source还是很重要的，实际开发中可以用这种方式来生成模拟数据（根据真实数据字段来生成模拟数据），进行测试，以保证数据处理逻辑没有问题，之后再上线
      */
-    class GenerateRandomDataSource implements SourceFunction<Event> {
+    public static class GenerateRandomDataSource implements SourceFunction<Event> {
 
         private Boolean runningFlag = true;
 

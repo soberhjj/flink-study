@@ -29,6 +29,9 @@ public class Startor {
             case "simpleAggregation":
                 aggregationTransformation.simpleAggregation(env);
                 break;
+            case "reduce":
+                aggregationTransformation.reduce(env);
+                break;
             default:
                 System.out.println("sorry, no this source type");
         }

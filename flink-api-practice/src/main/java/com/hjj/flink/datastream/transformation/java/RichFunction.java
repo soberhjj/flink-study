@@ -19,9 +19,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
  */
 public class RichFunction {
 
-    public static void main(String[] args) throws Exception {
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(2);
+    public void richMap(StreamExecutionEnvironment env) throws Exception {
         DataStreamSource<Event> clicks = env.fromElements(
                 new Event("Mary", "./home", 1000L),
                 new Event("Bob", "./cart", 2000L),

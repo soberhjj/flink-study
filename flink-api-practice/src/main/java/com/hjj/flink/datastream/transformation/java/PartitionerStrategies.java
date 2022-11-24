@@ -20,9 +20,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
  * 下面写一个自定义分区器的Demo
  */
 public class PartitionerStrategies {
-    public static void main(String[] args) throws Exception {
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(1);
+    public void customPartitioner(StreamExecutionEnvironment env) throws Exception {
         // 将自然数按照奇偶分区
         env.fromElements(1, 2, 3, 4, 5, 6, 7, 8)
                 .partitionCustom(new Partitioner<Integer>() {

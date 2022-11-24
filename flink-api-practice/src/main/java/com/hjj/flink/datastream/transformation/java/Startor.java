@@ -13,8 +13,17 @@ public class Startor {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
 
+        //基础转换
         BasicTransformation basicTransformation = new BasicTransformation();
+        //聚合
         AggregationTransformation aggregationTransformation = new AggregationTransformation();
+        //分区器
+        PartitionerStrategies partitionerStrategies = new PartitionerStrategies();
+        //转换&聚合的富函数版本
+        RichFunction richFunction = new RichFunction();
+        //窗口函数
+        WindowsFunction windowsFunction = new WindowsFunction();
+
         String sourceType = args[0];
         switch (sourceType) {
             case "map":
@@ -31,6 +40,15 @@ public class Startor {
                 break;
             case "reduce":
                 aggregationTransformation.reduce(env);
+                break;
+            case "custom-partitioner":
+                partitionerStrategies.customPartitioner(env);
+                break;
+            case "rich-map":
+                richFunction.richMap(env);
+                break;
+            case "window-reduce":
+                windowsFunction.reduce(env);
                 break;
             default:
                 System.out.println("sorry, no this source type");

@@ -30,12 +30,11 @@ public class FlinkCustomSource {
             Random random = new Random();
             String[] users = {"Mary", "Alice", "Bob"};
             String[] urls = {"./home", "./cart", "./fav", "./prod:?id=100", "./prod:?id=500", "./prod:?id=1000"};
-            Calendar calendar = Calendar.getInstance();
 
             while (runningFlag) {
                 String user = users[random.nextInt(users.length)];
                 String url = urls[random.nextInt(urls.length)];
-                sourceContext.collect(new Event(user, url, calendar.getTimeInMillis()));
+                sourceContext.collect(new Event(user, url, System.currentTimeMillis()));
                 Thread.sleep(1000);
             }
         }

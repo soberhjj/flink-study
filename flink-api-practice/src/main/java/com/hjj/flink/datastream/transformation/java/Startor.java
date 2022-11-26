@@ -22,7 +22,7 @@ public class Startor {
         //转换&聚合的富函数版本
         RichFunction richFunction = new RichFunction();
         //窗口函数
-        WindowsFunction windowsFunction = new WindowsFunction();
+        WindowFunctions windowFunctions = new WindowFunctions();
 
         String sourceType = args[0];
         switch (sourceType) {
@@ -48,7 +48,19 @@ public class Startor {
                 richFunction.richMap(env);
                 break;
             case "window-reduce":
-                windowsFunction.reduce(env);
+                windowFunctions.reduce(env);
+                break;
+            case "window-aggregate":
+                windowFunctions.aggregate(env);
+                break;
+            case "window-apply":
+                windowFunctions.apply(env);
+                break;
+            case "window-process":
+                windowFunctions.process(env);
+                break;
+            case "window-aggregate-process":
+                windowFunctions.aggregateAndProcess(env);
                 break;
             default:
                 System.out.println("sorry, no this source type");

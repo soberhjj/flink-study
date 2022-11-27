@@ -23,6 +23,8 @@ public class Startor {
         RichFunction richFunction = new RichFunction();
         //窗口函数
         WindowFunctions windowFunctions = new WindowFunctions();
+        //处理函数
+        ProcessFunctions processFunctions = new ProcessFunctions();
 
         String sourceType = args[0];
         switch (sourceType) {
@@ -61,6 +63,9 @@ public class Startor {
                 break;
             case "window-aggregate-process":
                 windowFunctions.aggregateAndProcess(env);
+                break;
+            case "process_function-topN":
+                processFunctions.topN(env);
                 break;
             default:
                 System.out.println("sorry, no this source type");

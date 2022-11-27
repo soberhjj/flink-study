@@ -2,11 +2,11 @@ package com.hjj.flink.datastream.transformation.java;
 
 import com.hjj.flink.datastream.source.java.FlinkCustomSource;
 import com.hjj.flink.pojo.Event;
+import com.hjj.flink.pojo.UrlViewCountWithWindowTime;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.AggregateFunction;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -38,7 +38,7 @@ import java.util.HashSet;
  * 4.全局窗口（Global Window）
  * <p>
  * 窗口函数根据对窗口中数据处理方式的不同(流处理方式与批处理方式)，分为两类：增量聚合函数(流处理方式)和全窗口函数(批处理方式)
- *
+ * <p>
  * 下面练习窗口函数的使用
  */
 public class WindowFunctions {
@@ -57,7 +57,7 @@ public class WindowFunctions {
         SingleOutputStreamOperator<Event> stream = source.assignTimestampsAndWatermarks(WatermarkStrategy.<Event>forBoundedOutOfOrderness(Duration.ZERO)
                 .withTimestampAssigner((element, recordTimestamp) -> element.timestamp));
 
-        //窗口聚合（统计窗口内的每个用户的访问次数,即PV）
+        //窗口聚合（统计每个用户的访问次数,即PV）（注意每个key都会分配一个窗口而不是所有key共用一个窗口）
         SingleOutputStreamOperator<Tuple2<String, Long>> res = stream.map(element -> Tuple2.of(element.User, 1L)).returns(Types.TUPLE(Types.STRING, Types.LONG))
                 .keyBy(r -> r.f0)
                 .window(TumblingEventTimeWindows.of(Time.seconds(5)))
@@ -85,7 +85,7 @@ public class WindowFunctions {
         SingleOutputStreamOperator<Event> stream = source.assignTimestampsAndWatermarks(WatermarkStrategy.<Event>forBoundedOutOfOrderness(Duration.ZERO)
                 .withTimestampAssigner((element, recordTimestamp) -> element.timestamp));
 
-        //窗口聚合（统计窗口内的人均重复访问量,即pv/uv,也就是平均每个用户会访问多少次页面，这在一定程度上代表了用户的粘度）
+        //窗口聚合（统计人均重复访问量,即pv/uv,也就是平均每个用户会访问多少次页面，这在一定程度上代表了用户的粘度）
         //所有数据设置相同的 key,发送到同一个分区统计 PV 和 UV,再相除
         SingleOutputStreamOperator<Double> res = stream.keyBy(data -> true)
                 .window(TumblingEventTimeWindows.of(Time.seconds(5)))
@@ -134,7 +134,7 @@ public class WindowFunctions {
         SingleOutputStreamOperator<Event> stream = source.assignTimestampsAndWatermarks(WatermarkStrategy.<Event>forBoundedOutOfOrderness(Duration.ZERO)
                 .withTimestampAssigner((element, recordTimestamp) -> element.timestamp));
 
-        //窗口聚合（统计窗口内的每个用户的访问次数,即PV）(相当于是上面reduce()对应的批处理版本)
+        //窗口聚合（统计每个用户的访问次数,即PV）(相当于是上面reduce()对应的批处理版本)
         SingleOutputStreamOperator<Tuple2<String, Long>> res = stream.map(element -> Tuple2.of(element.User, 1L)).returns(Types.TUPLE(Types.STRING, Types.LONG))
                 .keyBy(r -> r.f0)
                 .window(TumblingEventTimeWindows.of(Time.seconds(5)))
@@ -180,7 +180,7 @@ public class WindowFunctions {
         SingleOutputStreamOperator<Event> stream = source.assignTimestampsAndWatermarks(WatermarkStrategy.<Event>forBoundedOutOfOrderness(Duration.ZERO)
                 .withTimestampAssigner((element, recordTimestamp) -> element.timestamp));
 
-        //窗口聚合（统计窗口内的每个用户的访问次数,即PV）（相当于上面WindowFunction的增强版，除了窗口信息外还能获取处理时间、状态等更多上下文信息）
+        //窗口聚合（统计每个用户的访问次数,即PV）（相当于上面WindowFunction的增强版，除了窗口信息外还能获取处理时间、状态等更多上下文信息）
         SingleOutputStreamOperator<Tuple2<String, Long>> res = stream.map(element -> Tuple2.of(element.User, 1L)).returns(Types.TUPLE(Types.STRING, Types.LONG))
                 .keyBy(r -> r.f0)
                 .window(TumblingEventTimeWindows.of(Time.seconds(5)))
@@ -227,11 +227,11 @@ public class WindowFunctions {
                 .withTimestampAssigner((element, recordTimestamp) -> element.timestamp));
 
         //按照url分组,开滑动窗口统计
-        SingleOutputStreamOperator<Tuple4<String, Long, String, String>> res = stream.keyBy(data -> data.url)
+        SingleOutputStreamOperator<UrlViewCountWithWindowTime> res = stream.keyBy(data -> data.url)
                 .window(SlidingEventTimeWindows.of(Time.seconds(10), Time.seconds(5)))
                 .aggregate(new UrlViewCountAggregate(), new UrlViewCountProcessWindow());
 
-        res.print();
+        res.map(data -> data.toString()).print();
 
         env.execute();
     }
@@ -254,7 +254,7 @@ public class WindowFunctions {
         @Override
         //聚合输出结果
         public Tuple2<String, Long> getResult(Tuple2<String, Long> acc) {
-            return Tuple2.of(acc.f0,acc.f1);
+            return Tuple2.of(acc.f0, acc.f1);
         }
 
         @Override
@@ -264,14 +264,14 @@ public class WindowFunctions {
     }
 
     //全窗口函数,只需要包装窗口信息
-    public static class UrlViewCountProcessWindow extends ProcessWindowFunction<Tuple2<String, Long>, Tuple4<String, Long,String,String>, String, TimeWindow> {
+    public static class UrlViewCountProcessWindow extends ProcessWindowFunction<Tuple2<String, Long>, UrlViewCountWithWindowTime, String, TimeWindow> {
         @Override
-        public void process(String s, Context context, Iterable<Tuple2<String, Long>> iterable, Collector<Tuple4<String, Long, String, String>> collector) throws Exception {
+        public void process(String s, Context context, Iterable<Tuple2<String, Long>> iterable, Collector<UrlViewCountWithWindowTime> collector) throws Exception {
             // 结合窗口信息，包装输出内容
             Long start = context.window().getStart();
             Long end = context.window().getEnd();
             Tuple2<String, Long> urlViewCount = iterable.iterator().next();
-            collector.collect(Tuple4.of(urlViewCount.f0,urlViewCount.f1,"窗口开始时间:"+start,"窗口结束时间:"+end));
+            collector.collect(new UrlViewCountWithWindowTime(urlViewCount.f0, urlViewCount.f1, start, end));
         }
     }
 

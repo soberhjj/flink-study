@@ -43,7 +43,7 @@ public class BasicTransformation {
         /**
          * 2.lambda表达式写法
          */
-        SingleOutputStreamOperator<String> map = stream.map(data -> data.User);
+        SingleOutputStreamOperator<String> map = stream.map(data -> data.user);
 
         /**
          * 3.MapFunction实现类写法
@@ -58,7 +58,7 @@ public class BasicTransformation {
     class UserExtractor implements MapFunction<Event, String> {
         @Override
         public String map(Event event) throws Exception {
-            return event.User;
+            return event.user;
         }
     }
 
@@ -79,7 +79,7 @@ public class BasicTransformation {
                 new Event("Bob", "./cart", 6000L)
         );
 
-        SingleOutputStreamOperator<Event> filter = stream.filter(data -> data.User.equals("Bob"));
+        SingleOutputStreamOperator<Event> filter = stream.filter(data -> data.user.equals("Bob"));
 
         filter.print();
 
@@ -109,7 +109,7 @@ public class BasicTransformation {
 //            }
 
             //简洁写法
-            Arrays.stream(event.User.split(",")).forEach(out::collect);
+            Arrays.stream(event.user.split(",")).forEach(out::collect);
         }).returns(Types.STRING);
 
         flatMap.print();

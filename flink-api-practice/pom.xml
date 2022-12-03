@@ -71,6 +71,38 @@
             <artifactId>flink-connector-kafka_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
         </dependency>
+
+
+        <!--Flink Table API 相关依赖-->
+        <!--1.Flink的Table API桥接器（java版）,负责Table API和下层DataStream API 的连接支持-->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-table-api-java-bridge_${scala.binary.version}</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <!--2.
+        在本地的集成开发环境（IDE）里运行 Table API 和 SQL还需要要引入以下依赖
+        这里主要添加的依赖是一个“计划器”（planner），它是 Table API 的核心组件，负责提供运行时环境，并生成程序的执行计划
+        -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-table-planner-blink_${scala.binary.version}</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-streaming-scala_${scala.binary.version}</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <!--3.支持实现对自定义的数据格式做序列化-->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-table-common</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+
+
+
     </dependencies>
 
 
@@ -120,8 +152,6 @@
         </plugins>
 
     </build>
-
-
 
 
 </project>

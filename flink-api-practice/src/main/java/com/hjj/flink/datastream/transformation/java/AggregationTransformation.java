@@ -60,7 +60,7 @@ public class AggregationTransformation {
                 new Event("Bob", "./cart", 2000L)
         );
 
-        streamPojo.keyBy(e -> e.User).max("timestamp").print();
+        streamPojo.keyBy(e -> e.user).max("timestamp").print();
 
         env.execute();
     }
@@ -77,7 +77,7 @@ public class AggregationTransformation {
         DataStreamSource<Event> source = env.addSource(new FlinkCustomSource.GenerateRandomDataSource());
 
         //先用一个reduce算子实现sum的功能,再用一个reduce算子实现maxBy的功能
-        SingleOutputStreamOperator<Tuple2<String, Long>> res = source.map(e -> Tuple2.of(e.User, 1L)).returns(Types.TUPLE(Types.STRING, Types.LONG))
+        SingleOutputStreamOperator<Tuple2<String, Long>> res = source.map(e -> Tuple2.of(e.user, 1L)).returns(Types.TUPLE(Types.STRING, Types.LONG))
                 .keyBy(r -> r.f0)
                 .reduce((e1, e2) -> Tuple2.of(e1.f0, e1.f1 + e2.f1))
                 .keyBy(r -> true)

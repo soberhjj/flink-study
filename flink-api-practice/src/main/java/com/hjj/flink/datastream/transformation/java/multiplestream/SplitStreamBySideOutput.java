@@ -40,10 +40,10 @@ public class SplitStreamBySideOutput {
         SingleOutputStreamOperator<Event> processStream = stream.process(new ProcessFunction<Event, Event>() {
             @Override
             public void processElement(Event value, Context ctx, Collector<Event> out) throws Exception {
-                if (value.User.equals("Mary")) {
-                    ctx.output(maryTag, Tuple3.of(value.User, value.url, value.timestamp));
-                } else if (value.User.equals("Bob")) {
-                    ctx.output(bobTag, Tuple3.of(value.User, value.url, value.timestamp));
+                if (value.user.equals("Mary")) {
+                    ctx.output(maryTag, Tuple3.of(value.user, value.url, value.timestamp));
+                } else if (value.user.equals("Bob")) {
+                    ctx.output(bobTag, Tuple3.of(value.user, value.url, value.timestamp));
                 } else {
                     out.collect(value);
                 }

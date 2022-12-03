@@ -7,7 +7,7 @@ import java.sql.Timestamp;
  * @CreateTime: 2022-11-20
  */
 public class Event {
-    public String User; //属性直接设为public,省的加getter/setter
+    public String user; //属性直接设为public,省的加getter/setter
     public String url;
     public Long timestamp;
 
@@ -15,7 +15,7 @@ public class Event {
     }
 
     public Event(String user, String url, Long timestamp) {
-        User = user;
+        this.user = user;
         this.url = url;
         this.timestamp = timestamp;
     }
@@ -23,7 +23,7 @@ public class Event {
     @Override
     public String toString() {
         return "Event{" +
-                "User='" + User + '\'' +
+                "user='" + user + '\'' +
                 ", url='" + url + '\'' +
                 ", timestamp=" + new Timestamp(timestamp) +
                 '}';

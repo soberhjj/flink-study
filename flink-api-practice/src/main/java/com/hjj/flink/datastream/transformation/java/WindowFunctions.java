@@ -58,7 +58,7 @@ public class WindowFunctions {
                 .withTimestampAssigner((element, recordTimestamp) -> element.timestamp));
 
         //窗口聚合（统计每个用户的访问次数,即PV）（注意每个key都会分配一个窗口而不是所有key共用一个窗口）
-        SingleOutputStreamOperator<Tuple2<String, Long>> res = stream.map(element -> Tuple2.of(element.User, 1L)).returns(Types.TUPLE(Types.STRING, Types.LONG))
+        SingleOutputStreamOperator<Tuple2<String, Long>> res = stream.map(element -> Tuple2.of(element.user, 1L)).returns(Types.TUPLE(Types.STRING, Types.LONG))
                 .keyBy(r -> r.f0)
                 .window(TumblingEventTimeWindows.of(Time.seconds(5)))
                 .reduce((e1, e2) -> Tuple2.of(e1.f0, e1.f1 + e2.f1));
@@ -99,7 +99,7 @@ public class WindowFunctions {
                     @Override
                     //更新累加器
                     public Tuple2<HashSet<String>, Long> add(Event event, Tuple2<HashSet<String>, Long> accumulator) {
-                        accumulator.f0.add(event.User);
+                        accumulator.f0.add(event.user);
                         return Tuple2.of(accumulator.f0, accumulator.f1 + 1L);
                     }
 
@@ -135,7 +135,7 @@ public class WindowFunctions {
                 .withTimestampAssigner((element, recordTimestamp) -> element.timestamp));
 
         //窗口聚合（统计每个用户的访问次数,即PV）(相当于是上面reduce()对应的批处理版本)
-        SingleOutputStreamOperator<Tuple2<String, Long>> res = stream.map(element -> Tuple2.of(element.User, 1L)).returns(Types.TUPLE(Types.STRING, Types.LONG))
+        SingleOutputStreamOperator<Tuple2<String, Long>> res = stream.map(element -> Tuple2.of(element.user, 1L)).returns(Types.TUPLE(Types.STRING, Types.LONG))
                 .keyBy(r -> r.f0)
                 .window(TumblingEventTimeWindows.of(Time.seconds(5)))
                 .apply(new WindowFunction<Tuple2<String, Long>, Tuple2<String, Long>, String, TimeWindow>() {
@@ -181,7 +181,7 @@ public class WindowFunctions {
                 .withTimestampAssigner((element, recordTimestamp) -> element.timestamp));
 
         //窗口聚合（统计每个用户的访问次数,即PV）（相当于上面WindowFunction的增强版，除了窗口信息外还能获取处理时间、状态等更多上下文信息）
-        SingleOutputStreamOperator<Tuple2<String, Long>> res = stream.map(element -> Tuple2.of(element.User, 1L)).returns(Types.TUPLE(Types.STRING, Types.LONG))
+        SingleOutputStreamOperator<Tuple2<String, Long>> res = stream.map(element -> Tuple2.of(element.user, 1L)).returns(Types.TUPLE(Types.STRING, Types.LONG))
                 .keyBy(r -> r.f0)
                 .window(TumblingEventTimeWindows.of(Time.seconds(5)))
                 .process(new ProcessWindowFunction<Tuple2<String, Long>, Tuple2<String, Long>, String, TimeWindow>() {
